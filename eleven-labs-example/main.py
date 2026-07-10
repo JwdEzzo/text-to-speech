@@ -27,9 +27,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+load_dotenv()
+
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+
+try:
+    print("Testing Gemini connection...")
+    response: types.GenerateContentResponse = client.models.generate_content(
+        model="gemini-3.5-flash",
+        contents="Hello! Respond with the word 'Success' if you can read this.",
+    )
+    print(f"Response from Gemini: {response.text}")
+except Exception as e:
+    print(f"\n❌ CRITICAL ERROR RECEIVED:\n{e}")
+
 # --- Gemini setup ---------------------------------------------------------
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-GEMINI_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash")
+
+_gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
+print(f"DEBUG: Gemini Client Initialized? {'YES' if _gemini_client else 'NO'}")
 
 _gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
 
