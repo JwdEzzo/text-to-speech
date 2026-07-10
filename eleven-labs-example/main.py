@@ -1,6 +1,7 @@
 import io
 import os
 
+from dotenv import load_dotenv
 import edge_tts
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,8 +20,8 @@ DEFAULT_VOICE = "en-US-AriaNeural"
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
     ],
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
@@ -77,7 +78,7 @@ async def synthesize(text: str, voice: str, punctuate: bool = True) -> io.BytesI
 
     async for chunk in communicate.stream():
         if chunk["type"] == "audio":
-            audio_buffer.write(chunk["data"])
+            audio_buffer.write(chunk["data"]) # type: ignore
 
     if audio_buffer.getbuffer().nbytes == 0:
         raise HTTPException(status_code=500, detail="Failed to generate audio for the given text/voice")
@@ -94,13 +95,6 @@ async def speak_get(
 ):
     audio_buffer = await synthesize(text, voice, punctuate)
     return Response(content=audio_buffer.getvalue(), media_type="audio/mpeg")
-
-
-@app.post("/speak")
-async def speak_post(payload: SpeakRequest):
-    audio_buffer = await synthesize(payload.text, payload.voice, payload.punctuate)
-    return Response(content=audio_buffer.getvalue(), media_type="audio/mpeg")
-
 
 @app.get("/voices")
 async def list_voices():

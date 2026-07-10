@@ -1,7 +1,7 @@
-import { fetchBaseQuery } from "@reduxjs/toolkit/query";
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { fetchBaseQuery } from '@reduxjs/toolkit/query';
+import { createApi } from '@reduxjs/toolkit/query/react';
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = 'http://127.0.0.1:8000';
 
 export interface SpeakRequest {
   text: string;
@@ -53,7 +53,7 @@ const blobResponseHandler = async (response: Response): Promise<string> => {
 };
 
 export const ttsApi = createApi({
-  reducerPath: "ttsApi",
+  reducerPath: 'ttsApi',
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE_URL,
   }),
@@ -61,22 +61,13 @@ export const ttsApi = createApi({
     // GET: /speak?text=...&voice=...&punctuate=...
     getSpeech: builder.query<string, SpeakRequest>({
       query: ({ text, voice, punctuate }) => ({
-        url: "/speak",
-        method: "GET",
+        url: '/speak',
+        method: 'GET',
         params: { text, voice, punctuate },
-        responseHandler: blobResponseHandler,
-      }),
-    }),
-    // POST: /speak  { text, voice, punctuate }
-    postSpeech: builder.mutation<string, SpeakRequest>({
-      query: (body) => ({
-        url: "/speak",
-        method: "POST",
-        body,
         responseHandler: blobResponseHandler,
       }),
     }),
   }),
 });
 
-export const { useLazyGetSpeechQuery, usePostSpeechMutation } = ttsApi;
+export const { useLazyGetSpeechQuery } = ttsApi;
